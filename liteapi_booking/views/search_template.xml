@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="liteapi_booking_styles" name="Booking Styles">
+        <style>
+            :root {
+                --brand-dark-blue: #0A2E5A;
+                --brand-green: #27AE60;
+                --brand-orange: #F39C12;
+                --brand-yellow: #F1C40F;
+                --brand-red: #E74C3C;
+                --brand-light-blue: #E8F4FD;
+                --brand-gray: #6C757D;
+                --brand-border: #dee2e6;
+                --brand-text: #212529;
+                --new-input-bg: #F8F9FA;
+                --new-input-border: #E9ECEF;
+                --new-btn-blue: #2A4B7C;
+            }
+            .b-bg-primary { background-color: var(--brand-dark-blue) !important; color: white; }
+            .b-text-primary { color: var(--brand-dark-blue) !important; }
+            .b-bg-light { background-color: var(--brand-light-blue) !important; }
+            .btn-b-primary {
+                background-color: var(--brand-dark-blue);
+                color: white;
+                font-weight: 500;
+                border: 1px solid var(--brand-dark-blue);
+                border-radius: 4px;
+                padding: 8px 20px;
+            }
+            .btn-b-primary:hover { background-color: #061f3d; color: white; border-color: #061f3d; }
+            .btn-b-cta {
+                background-color: var(--brand-dark-blue);
+                color: white;
+                font-weight: 600;
+                border: none;
+                border-radius: 4px;
+                padding: 10px 16px;
+                transition: transform 0.1s;
+            }
+            .btn-b-cta:hover { background-color: var(--brand-orange); color: white; transform: translateY(-1px); }
+            .b-card { border: 1px solid var(--brand-border); border-radius: 6px; background: white; transition: box-shadow 0.2s; }
+            .b-card:hover { box-shadow: 0 4px 15px rgba(10, 46, 90, 0.15); border-color: var(--brand-dark-blue); }
+            .b-hotel-name { font-size: 1.3rem; font-weight: 700; color: var(--brand-dark-blue); text-decoration: none; }
+            .b-hotel-name:hover { color: var(--brand-orange); text-decoration: none; }
+            .b-price-large { font-size: 1.6rem; font-weight: 700; color: var(--brand-text); }
+            .b-badge-score {
+                background-color: var(--brand-dark-blue);
+                color: white;
+                padding: 8px;
+                border-radius: 6px 6px 6px 0;
+                font-weight: 700;
+                min-width: 35px;
+                text-align: center;
+                display: inline-block;
+            }
+            [dir="rtl"] .b-badge-score { border-radius: 6px 6px 0 6px; }
+            .b-room-table thead th { background-color: var(--brand-dark-blue); color: white; border: none; vertical-align: middle; }
+            .b-room-table td { vertical-align: middle; border-color: var(--brand-border); }
+            .text-brand-green { color: var(--brand-green) !important; }
+            .text-brand-red { color: var(--brand-red) !important; }
+            .text-brand-orange { color: var(--brand-orange) !important; }
+            .iroom-logo { font-family: sans-serif; font-weight: 900; font-size: 4rem; color: var(--new-btn-blue); line-height: 1; letter-spacing: -2px; }
+            .iroom-dot { color: var(--brand-yellow); }
+            .iroom-subtitle { color: #6c757d; font-size: 1.1rem; margin-top: 0.5rem; letter-spacing: 0; }
+            .search-card { background: transparent; padding: 2rem 1rem; max-width: 900px; margin: 3rem auto; }
+            .input-with-label {
+                position: relative; background-color: var(--new-input-bg); border: 1px solid var(--new-input-border);
+                border-radius: 8px; height: 60px; padding: 5px 15px; text-align: right; transition: all 0.2s;
+                display: flex; flex-direction: column; justify-content: center;
+            }
+            [dir="ltr"] .input-with-label { text-align: left; }
+            .input-with-label:focus-within { background-color: #fff; box-shadow: 0 0 0 4px rgba(42, 75, 124, 0.1); border-color: var(--new-btn-blue); }
+            .inner-label { display: block; font-size: 0.75rem; color: #6C757D; font-weight: 600; margin-bottom: 0; }
+            .inner-input { display: block; width: 100%; border: none; background: transparent; padding: 0; font-size: 1rem; font-weight: 500; color: #333; height: 30px; line-height: 30px; }
+            .inner-input:focus { outline: none; }
+            .custom-input {
+                background-color: var(--new-input-bg); border: 1px solid var(--new-input-border);
+                border-radius: 8px; height: 55px; padding: 0 15px; width: 100%; font-size: 1rem; color: #333; transition: all 0.2s;
+            }
+            .custom-input:focus { background-color: #fff; box-shadow: 0 0 0 4px rgba(42, 75, 124, 0.1); border-color: var(--new-btn-blue); outline: none; }
+            .search-btn {
+                background-color: var(--new-btn-blue); color: white; border-radius: 30px; padding: 12px 50px;
+                font-size: 1.2rem; border: none; min-width: 180px; transition: all 0.3s; font-weight: 600;
+            }
+            .search-btn:hover { background-color: #1a3a6c; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(42, 75, 124, 0.2); }
+            .nav-pills .nav-link { color: var(--new-btn-blue); background-color: white; border: 1px solid var(--new-input-border); margin: 0 5px; }
+            .nav-pills .nav-link.active { background-color: var(--new-btn-blue); color: white; border-color: var(--new-btn-blue); }
+        </style>
+    </template>
+
+    <template id="hotel_search_template" name="Hotel Search">
+        <t t-call="website.layout">
+            <t t-call="liteapi_booking.liteapi_booking_styles"/>
+            <div class="container pb-5">
+                <div class="search-card text-center">
+                    <div class="mb-5">
+                        <div class="iroom-logo"><span class="iroom-dot">i</span>room</div>
+                        <div class="iroom-subtitle">نظام الحجز الذكي</div>
+                    </div>
+                    <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill px-4 fw-bold" id="pills-place-tab" data-bs-toggle="pill" data-bs-target="#pills-place" type="button" role="tab">
+                            <i class="fa fa-map-marker me-2"></i> بحث كلاسيكي
+                        </button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill px-4 fw-bold" id="pills-vibe-tab" data-bs-toggle="pill" data-bs-target="#pills-vibe" type="button" role="tab">
+                            <i class="fa fa-magic me-2"></i> بحث Vibe (AI)
+                        </button>
+                      </li>
+                    </ul>
+                    <form action="/hotel/results" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="search_type" value="city" id="search_type_input"/>
+                        <div class="tab-content mb-4" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-place" role="tabpanel">
+                                <div class="position-relative">
+                                    <select name="city_id" class="custom-input form-select" style="appearance: none; -webkit-appearance: none;">
+                                        <option value="" disabled="disabled" selected="selected" class="text-muted">اختر المدينة...</option>
+                                        <t t-foreach="cities" t-as="city">
+                                            <option t-att-value="city.id"><t t-esc="city.name"/></option>
+                                        </t>
+                                    </select>
+                                    <i class="fa fa-chevron-down position-absolute top-50 end-0 translate-middle-y me-3 text-muted" style="pointer-events: none; left: 15px; right: auto;"></i>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="pills-vibe" role="tabpanel">
+                                <textarea name="search_query_vibe" class="form-control custom-input pt-3" style="height: 80px; resize: none;" placeholder="أبحث عن فندق هادئ قريب من الحرم مع إفطار جيد..."></textarea>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-5">
+                            <div class="col-lg-4 col-md-4">
+                                <div class="input-with-label">
+                                    <label class="inner-label">تاريخ الوصول</label>
+                                    <div class="position-relative">
+                                        <input type="text" onfocus="(this.type='date')" onblur="(this.value ? this.type='date' : this.type='text')" name="checkin" class="inner-input text-start" required="required" placeholder="DD/MM/YYYY"/>
+                                        <i class="fa fa-calendar position-absolute top-50 end-0 translate-middle-y me-1 text-muted small" style="pointer-events: none; left: 0; right: auto;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <div class="input-with-label">
+                                    <label class="inner-label">تاريخ المغادرة</label>
+                                    <div class="position-relative">
+                                        <input type="text" onfocus="(this.type='date')" onblur="(this.value ? this.type='date' : this.type='text')" name="checkout" class="inner-input text-start" required="required" placeholder="DD/MM/YYYY"/>
+                                        <i class="fa fa-calendar position-absolute top-50 end-0 translate-middle-y me-1 text-muted small" style="pointer-events: none; left: 0; right: auto;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                 <div class="input-with-label">
+                                     <label class="inner-label">عدد الضيوف</label>
+                                     <div class="position-relative">
+                                         <input type="number" name="guests" class="inner-input text-start" value="2" min="1" required="required"/>
+                                         <span class="text-muted position-absolute top-50 end-0 translate-middle-y me-1 small" style="pointer-events: none; left: 0; right: auto;">أشخاص</span>
+                                     </div>
+                                 </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="search-btn">
+                            بحث <i class="fa fa-search ms-2 fa-flip-horizontal"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var placeTab = document.getElementById('pills-place-tab');
+                    var vibeTab = document.getElementById('pills-vibe-tab');
+                    var typeInput = document.getElementById('search_type_input');
+                    var citySelect = document.querySelector('select[name="city_id"]');
+                    var vibeInput = document.querySelector('textarea[name="search_query_vibe"]');
+                    if(placeTab &amp;&amp; vibeTab){
+                        placeTab.addEventListener('shown.bs.tab', function (e) {
+                            typeInput.value = 'city';
+                            citySelect.setAttribute('required', 'required');
+                            vibeInput.removeAttribute('required');
+                            vibeInput.name = 'search_query_vibe';
+                        });
+                        vibeTab.addEventListener('shown.bs.tab', function (e) {
+                            typeInput.value = 'vibe';
+                            citySelect.removeAttribute('required');
+                            vibeInput.setAttribute('required', 'required');
+                            vibeInput.name = 'search_query';
+                        });
+                    }
+                });
+            </script>
+        </t>
+    </template>
+
+    <template id="hotel_search_results_template" name="Search Results">
+        <t t-call="website.layout">
+            <t t-call="liteapi_booking.liteapi_booking_styles"/>
+            <div class="container mt-4 mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="mb-0 fw-bold b-text-primary"><t t-esc="len(hotels)"/> أماكن إقامة متاحة</h4>
+                        <small class="text-muted">الأسعار تشمل الضرائب والرسوم</small>
+                    </div>
+                    <a href="/hotel/search" class="btn btn-outline-secondary btn-sm">تعديل البحث</a>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3 d-none d-lg-block">
+                        <div class="b-card p-3 mb-3">
+                            <h6 class="fw-bold mb-3 b-text-primary">تصفية النتائج</h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" checked="checked"/>
+                                <label class="form-check-label small">المتاحة فقط</label>
+                            </div>
+                            <hr style="border-color: var(--brand-border);"/>
+                            <h6 class="fw-bold mb-3 b-text-primary">عدد النجوم</h6>
+                            <t t-foreach="range(5, 2, -1)" t-as="stars">
+                                <div class="form-check mb-1">
+                                    <input class="form-check-input" type="checkbox"/>
+                                    <label class="form-check-label small text-warning">
+                                        <t t-foreach="range(stars)" t-as="s"><i class="fa fa-star"></i></t>
+                                    </label>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <t t-if="not hotels">
+                            <div class="alert alert-light border shadow-sm p-5 text-center" style="border-color: var(--brand-border);">
+                                <i class="fa fa-search fa-3x text-muted mb-3"></i>
+                                <h4>لم يتم العثور على نتائج</h4>
+                                <p>جرب تغيير معايير البحث أو التواريخ.</p>
+                                <a href="/hotel/search" class="btn btn-b-primary mt-2">بحث جديد</a>
+                            </div>
+                        </t>
+                        <t t-foreach="hotels" t-as="hotel">
+                            <div class="b-card mb-3 p-3">
+                                <div class="row g-0">
+                                    <div class="col-md-3 position-relative">
+                                        <a t-attf-href="/booking/view/#{hotel['liteapi_id']}">
+                                            <img t-att-src="hotel['image_url']" class="img-fluid rounded-1" style="height: 200px; width: 100%; object-fit: cover;" onerror="this.src='/web/static/src/img/placeholder.png'"/>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6 px-md-3 py-2 py-md-0 d-flex flex-column">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <a t-attf-href="/booking/view/#{hotel['liteapi_id']}" class="b-hotel-name">
+                                                    <t t-esc="hotel['name']"/>
+                                                </a>
+                                                <div class="small text-muted mt-1" t-if="hotel.get('address')">
+                                                    <i class="fa fa-map-marker me-1"></i> <t t-esc="hotel['address']"/>
+                                                </div>
+                                            </div>
+                                            <span class="text-nowrap ms-2" style="color: var(--brand-orange);">
+                                                 <t t-foreach="range(int(hotel['star_rating']))" t-as="i"><i class="fa fa-star small"></i></t>
+                                            </span>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="badge bg-light text-dark border">شامل الضرائب والرسوم</span>
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 ms-1">إلغاء مجاني متاح</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 d-flex flex-column justify-content-between text-end border-start ps-md-3 mt-3 mt-md-0" style="border-color: var(--brand-border);">
+                                        <div class="d-flex justify-content-end align-items-center mb-2">
+                                            <div class="me-2" t-if="hotel.get('review_score')">
+                                                <div class="fw-bold b-text-primary">تقييم الزوار</div>
+                                                <div class="small text-muted text-nowrap">بناءً على التقييمات</div>
+                                            </div>
+                                            <div class="b-badge-score" t-if="hotel.get('review_score')">
+                                                <t t-esc="hotel['review_score']"/>
+                                            </div>
+                                        </div>
+                                        <div class="mt-auto">
+                                            <div class="small text-muted mb-0">سعر الليلة يبدأ من</div>
+                                            <div class="b-price-large">
+                                                <small class="fs-6 text-muted align-top"><t t-esc="hotel['currency']"/></small> <t t-esc="hotel['price']"/>
+                                            </div>
+                                            <a t-attf-href="/booking/view/#{hotel['liteapi_id']}" class="btn btn-b-cta w-100 mt-2 d-flex justify-content-center align-items-center">
+                                                عرض الغرف <i class="fa fa-chevron-left ms-2 small"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="hotel_details_template" name="Hotel Details">
+        <t t-call="website.layout">
+            <t t-call="liteapi_booking.liteapi_booking_styles"/>
+            <div class="b-bg-light pb-5">
+                <div class="bg-white border-bottom py-2 mb-4 sticky-top shadow-sm" style="z-index: 900; border-color: var(--brand-border) !important;">
+                    <div class="container d-flex justify-content-between align-items-center">
+                         <div class="small">
+                            <span class="text-muted">الدخول:</span> <span class="fw-bold me-3 b-text-primary"><t t-esc="search_params['checkin']"/></span>
+                            <span class="text-muted">الخروج:</span> <span class="fw-bold me-3 b-text-primary"><t t-esc="search_params['checkout']"/></span>
+                            <span class="text-muted">الضيوف:</span> <span class="fw-bold b-text-primary"><t t-esc="search_params['guests']"/></span>
+                         </div>
+                         <a href="/hotel/search" class="btn btn-b-primary btn-sm">تغيير البحث</a>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <span class="badge mb-1" style="background-color: var(--brand-gray);">فندق</span>
+                            <h2 class="mb-0 fw-bold b-text-primary">
+                                <t t-esc="hotel_info['name']"/>
+                                <span class="fs-5 ms-2 text-brand-orange">
+                                    <t t-foreach="range(hotel_info['stars'])" t-as="i"><i class="fa fa-star"></i></t>
+                                </span>
+                            </h2>
+                            <p class="mb-0 text-dark">
+                                <i class="fa fa-map-marker b-text-primary"></i> <span t-esc="hotel_info['address']"/>
+                                <a t-if="hotel_info['google_maps_link']" t-att-href="hotel_info['google_maps_link']" target="_blank" class="fw-bold ms-2 small" style="color: var(--brand-dark-blue);">عرض على الخريطة</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-4">
+                        <div class="col-md-8">
+                             <div t-if="hotel_info['images']" class="rounded-1 overflow-hidden position-relative" style="height: 400px;">
+                                <img t-att-src="hotel_info['images'][0]" class="w-100 h-100" style="object-fit: cover;" onerror="this.src='/web/static/src/img/placeholder.png'"/>
+                             </div>
+                        </div>
+                        <div class="col-md-4 d-none d-md-block">
+                             <div class="d-flex flex-column h-100 justify-content-between gap-2">
+                                 <t t-foreach="hotel_info['images'][1:3]" t-as="sub_img">
+                                     <div class="rounded-1 overflow-hidden h-50">
+                                         <img t-att-src="sub_img" class="w-100 h-100" style="object-fit: cover;" onerror="this.src='/web/static/src/img/placeholder.png'"/>
+                                     </div>
+                                 </t>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="mb-5">
+                                <h5 class="fw-bold mb-3 b-text-primary">عن الفندق</h5>
+                                <p class="text-muted" t-out="hotel_info['description']"/>
+                                <div class="mt-3 d-flex flex-wrap gap-2">
+                                    <t t-foreach="hotel_info['facilities'][:8]" t-as="facility">
+                                        <span class="badge bg-light text-dark border"><i class="fa fa-check text-brand-green me-1"></i> <t t-esc="facility"/></span>
+                                    </t>
+                                </div>
+                            </div>
+                            <h4 id="book_now" class="fw-bold mb-3 b-text-primary">الغرف المتاحة</h4>
+                            <t t-if="error_msg">
+                                <div class="alert alert-danger" t-esc="error_msg"/>
+                            </t>
+                            <div class="d-flex flex-column gap-3">
+                                <t t-foreach="grouped_rooms" t-as="group_key">
+                                    <t t-set="group" t-value="grouped_rooms[group_key]"/>
+                                    <div class="b-card overflow-hidden">
+                                        <div class="p-3 bg-light border-bottom d-flex align-items-center">
+                                            <div class="me-3">
+                                                <img t-att-src="group['image']" class="rounded" style="width: 80px; height: 80px; object-fit: cover;" onerror="this.src='/web/static/src/img/placeholder.png'"/>
+                                            </div>
+                                            <div>
+                                                <h5 class="fw-bold mb-1 text-dark"><t t-esc="group['name']"/></h5>
+                                                <div class="small text-muted"><i class="fa fa-bed me-1"></i> خيارات متعددة متاحة</div>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table mb-0 align-middle">
+                                                <thead class="text-muted small bg-white">
+                                                    <tr>
+                                                        <th class="ps-4" style="width: 40%;">خيار الحجز</th>
+                                                        <th style="width: 15%;">الضيوف</th>
+                                                        <th style="width: 25%;">السعر للإقامة كاملة</th>
+                                                        <th style="width: 20%;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr t-foreach="group['rates']" t-as="rate">
+                                                        <td class="ps-4">
+                                                            <div class="fw-bold text-dark mb-1"><t t-esc="rate['name']"/></div>
+                                                            <div class="small">
+                                                                <span t-if="rate['refundable']" class="text-brand-green fw-bold"><i class="fa fa-check"></i> إلغاء مجاني</span>
+                                                                <span t-else="" class="text-danger"><i class="fa fa-ban"></i> غير قابل للاسترداد</span>
+                                                                <div t-if="rate['cancellation_deadline']" class="text-muted mt-1" style="font-size: 0.8rem;">
+                                                                    آخر موعد للإلغاء: <t t-esc="rate['cancellation_deadline']"/>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <t t-foreach="range(int(search_params['guests']))" t-as="g"><i class="fa fa-user text-muted"></i></t>
+                                                        </td>
+                                                        <td>
+                                                            <div class="fw-bold fs-5 text-dark">SAR <t t-esc="rate['price']"/></div>
+                                                            <div class="small text-muted">شامل الضرائب والرسوم</div>
+                                                        </td>
+                                                        <td class="pe-4 text-end">
+                                                            <form action="/hotel/prebook" method="POST">
+                                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                                <input type="hidden" name="hotel_lite_id" t-att-value="hotel_lite_id"/>
+                                                                <input type="hidden" name="offer_id" t-att-value="rate['offer_id']"/>
+                                                                <input type="hidden" name="price" t-att-value="rate['price']"/>
+                                                                <button type="submit" class="btn btn-b-cta btn-sm w-100">
+                                                                    حجز الآن
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

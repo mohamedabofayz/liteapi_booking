@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_liteapi_booking_tree" model="ir.ui.view">
+        <field name="name">liteapi.booking.tree</field>
+        <field name="model">liteapi.booking</field>
+        <field name="arch" type="xml">
+            <tree string="Bookings" decoration-success="status=='confirmed'" decoration-danger="status=='failed'">
+                <field name="name"/>
+                <field name="create_date"/>
+                <field name="hotel_name"/>
+                <field name="guest_name"/>
+                <field name="price"/>
+                <field name="status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_liteapi_booking_form" model="ir.ui.view">
+        <field name="name">liteapi.booking.form</field>
+        <field name="model">liteapi.booking</field>
+        <field name="arch" type="xml">
+            <form string="Booking">
+                <header>
+                    <field name="status" widget="statusbar" statusbar_visible="draft,confirmed,failed,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="hotel_name"/>
+                            <field name="room_type"/>
+                            <field name="checkin_date"/>
+                            <field name="checkout_date"/>
+                        </group>
+                        <group>
+                            <field name="guest_name"/>
+                            <field name="email"/>
+                            <field name="price"/>
+                            <field name="currency"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="API Details">
+                            <group>
+                                <field name="liteapi_booking_id"/>
+                                <field name="prebook_id"/>
+                                <field name="transaction_id"/>
+                            </group>
+                            <field name="booking_details"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_liteapi_booking" model="ir.actions.act_window">
+        <field name="name">Hotel Bookings</field>
+        <field name="res_model">liteapi.booking</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_liteapi_root" name="Hotel Bookings" web_icon="liteapi_booking,static/description/icon.png"/>
+    <menuitem id="menu_liteapi_bookings" parent="menu_liteapi_root" action="action_liteapi_booking"/>
+</odoo>

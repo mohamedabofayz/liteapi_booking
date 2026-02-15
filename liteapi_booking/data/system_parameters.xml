@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="liteapi_api_key_param" model="ir.config_parameter">
+            <field name="key">liteapi.api_key</field>
+            <field name="value">sand_c0155ab8-c683-4f26-8f94-b5e92c5797b9</field>
+        </record>
+        <record id="liteapi_base_url_param" model="ir.config_parameter">
+            <field name="key">liteapi.base_url</field>
+            <field name="value">https://api.liteapi.travel/v3.0</field>
+        </record>
+    </data>
+</odoo>

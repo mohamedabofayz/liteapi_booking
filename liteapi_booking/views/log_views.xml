@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_liteapi_audit_log_tree" model="ir.ui.view">
+        <field name="name">liteapi.audit.log.tree</field>
+        <field name="model">liteapi.audit.log</field>
+        <field name="arch" type="xml">
+            <tree string="API Logs" create="0" edit="0" delete="0" decoration-danger="result in ('error', 'blocked')" decoration-success="result == 'success'">
+                <field name="timestamp"/>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="result"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_liteapi_audit_log_form" model="ir.ui.view">
+        <field name="name">liteapi.audit.log.form</field>
+        <field name="model">liteapi.audit.log</field>
+        <field name="arch" type="xml">
+            <form string="API Log" create="0" edit="0" delete="0">
+                <sheet>
+                    <group>
+                        <field name="timestamp"/>
+                        <field name="name"/>
+                        <field name="user_id"/>
+                        <field name="result"/>
+                    </group>
+                    <group string="Details">
+                        <field name="details"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_liteapi_audit_log_search" model="ir.ui.view">
+        <field name="name">liteapi.audit.log.search</field>
+        <field name="model">liteapi.audit.log</field>
+        <field name="arch" type="xml">
+            <search string="Search Logs">
+                <field name="name"/>
+                <field name="user_id"/>
+                <filter string="Blocked" name="blocked" domain="[('result', '=', 'blocked')]"/>
+                <filter string="Errors" name="errors" domain="[('result', '=', 'error')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Result" name="group_by_result" context="{'group_by':'result'}"/>
+                    <filter string="User" name="group_by_user" context="{'group_by':'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_liteapi_audit_log" model="ir.actions.act_window">
+        <field name="name">API Audit Logs</field>
+        <field name="res_model">liteapi.audit.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_liteapi_audit_log_search"/>
+    </record>
+</odoo>

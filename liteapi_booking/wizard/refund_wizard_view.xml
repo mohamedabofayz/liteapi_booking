@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_liteapi_refund_wizard_form" model="ir.ui.view">
+        <field name="name">liteapi.refund.wizard.form</field>
+        <field name="model">liteapi.refund.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cancel &amp; Refund">
+                <div class="alert alert-warning" role="alert">
+                    <span class="fa fa-exclamation-triangle"/>
+                    Currently, refunding will credit the customer's <strong>Wallet</strong>. No cash refund is processed automatically.
+                </div>
+                <group>
+                    <field name="booking_id"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="amount" widget="monetary"/>
+                    <field name="reason" placeholder="e.g. Customer Request, Hotel Error..."/>
+                </group>
+                <footer>
+                    <button string="Confirm Cancel &amp; Refund" name="action_confirm_refund" type="object" class="btn-danger"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Add Cancel Button to Booking View -->
+    <record id="view_liteapi_booking_form_inherit_cancel" model="ir.ui.view">
+        <field name="name">liteapi.booking.form.cancel</field>
+        <field name="model">liteapi.booking</field>
+        <field name="inherit_id" ref="liteapi_booking.view_liteapi_booking_form"/>
+        <field name="arch" type="xml">
+            <field name="status" position="before">
+                <button name="action_cancel_and_refund_wizard" string="Cancel &amp; Refund" type="object" class="oe_highlight btn-danger" invisible="status != 'confirmed'"/>
+            </field>
+             <notebook position="inside">
+                 <page string="Cancellation &amp; Policy">
+                     <group>
+                         <field name="is_refundable"/>
+                        <field name="cancellation_deadline"/>
+                        <field name="cancellation_policy"/>
+                     </group>
+                 </page>
+             </notebook>
+        </field>
+    </record>
+</odoo>

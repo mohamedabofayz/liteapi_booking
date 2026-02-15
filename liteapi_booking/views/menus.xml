@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top Menu -->
+    <menuitem id="liteapi_booking_root" name="LiteAPI Booking" sequence="10"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="liteapi_booking_config" name="Configuration" parent="liteapi_booking_root" sequence="100"/>
+    
+    <menuitem id="liteapi_city_menu" name="Cities" parent="liteapi_booking_config" action="action_liteapi_city" sequence="10"/>
+
+    <!-- Hotels Menu -->
+    <menuitem id="liteapi_booking_hotels" name="Hotels" parent="liteapi_booking_root" sequence="10"/>
+    <menuitem id="liteapi_hotel_menu" name="Hotels List" parent="liteapi_booking_hotels" action="action_liteapi_hotel" sequence="10"/>
+
+    <!-- Audit Menu -->
+    <menuitem id="liteapi_booking_audit" name="Audit" parent="liteapi_booking_root" sequence="90"/>
+    <menuitem id="liteapi_audit_log_menu" name="API Logs" parent="liteapi_booking_audit" action="action_liteapi_audit_log" sequence="10"/>
+
+    <!-- Booking Menu -->
+    <menuitem id="liteapi_booking_menu" name="Bookings" parent="liteapi_booking_root" sequence="20"/>
+    <menuitem id="liteapi_booking_list_menu" name="All Bookings" parent="liteapi_booking_menu" action="action_liteapi_booking" sequence="10"/>
+
+    <!-- Reporting Menu -->
+    <menuitem id="liteapi_reports_menu" name="Reports &amp; Governance" parent="liteapi_booking_root" sequence="95"/>
+    <menuitem id="liteapi_admin_dashboard_menu" name="Dashboard" parent="liteapi_reports_menu" action="action_liteapi_admin_dashboard" sequence="1"/>
+    <menuitem id="liteapi_abuse_report_menu" name="Risk Analysis" parent="liteapi_reports_menu" action="action_liteapi_abuse_report" sequence="10"/>
+
+
+</odoo>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_liteapi_admin_dashboard" model="ir.ui.view">
+        <field name="name">liteapi.admin.dashboard.form</field>
+        <field name="model">liteapi.admin.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Dashboard" create="0" delete="0" edit="0">
+                <div class="oe_title">
+                    <h1>LiteAPI Governance Dashboard</h1>
+                </div>
+                
+                <div class="row mt-4 mb-4">
+                    <div class="col-3">
+                        <div class="alert alert-info text-center">
+                            <h3><field name="today_searches"/></h3>
+                            <small>Searches Today</small>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="alert alert-success text-center">
+                            <h3><field name="today_bookings"/></h3>
+                            <small>Bookings Today</small>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="alert alert-warning text-center">
+                            <h3><field name="wallet_liability" widget="monetary" options="{'currency_field': 'currency_id'}"/></h3> <!-- Requires currency context, simplified here -->
+                            <small>Total Wallet Liability</small>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="alert alert-danger text-center">
+                            <h3><field name="today_errors"/></h3>
+                            <small>Errors Today</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                     <div class="col-6">
+                        <h4>Cache Efficiency</h4>
+                        <div class="d-flex align-items-center">
+                             <h1><field name="cache_hit_ratio" widget="progressbar"/></h1>
+                        </div>
+                     </div>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_liteapi_admin_dashboard" model="ir.actions.act_window">
+        <field name="name">Admin Dashboard</field>
+        <field name="res_model">liteapi.admin.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+
+
+    <!-- ABUSE REPORT VIEW -->
+    <record id="view_liteapi_abuse_report_tree" model="ir.ui.view">
+        <field name="name">liteapi.abuse.report.tree</field>
+        <field name="model">liteapi.abuse.report</field>
+        <field name="arch" type="xml">
+            <tree string="Abuse Report" decoration-danger="risk_level == 'high'">
+                <field name="user_id"/>
+                <field name="search_count"/>
+                <field name="booking_count"/>
+                <field name="ratio"/>
+                <field name="risk_level"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_liteapi_abuse_report" model="ir.actions.act_window">
+        <field name="name">User Risk Analysis</field>
+        <field name="res_model">liteapi.abuse.report</field>
+        <field name="view_mode">tree</field>
+    </record>
+    
+
+
+</odoo>

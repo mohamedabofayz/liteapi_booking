@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_liteapi_hotel_tree" model="ir.ui.view">
+        <field name="name">liteapi.hotel.tree</field>
+        <field name="model">liteapi.hotel</field>
+        <field name="arch" type="xml">
+            <tree string="Hotels">
+                <field name="name"/>
+                <field name="liteapi_hotel_id"/>
+                <field name="city_id"/>
+                <field name="is_cached"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_liteapi_hotel_form" model="ir.ui.view">
+        <field name="name">liteapi.hotel.form</field>
+        <field name="model">liteapi.hotel</field>
+        <field name="arch" type="xml">
+            <form string="Hotel">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="liteapi_hotel_id"/>
+                        </group>
+                        <group>
+                            <field name="city_id"/>
+                            <field name="is_cached"/>
+                        </group>
+                        <group string="Coordinates">
+                            <field name="latitude"/>
+                            <field name="longitude"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_liteapi_hotel" model="ir.actions.act_window">
+        <field name="name">Hotels</field>
+        <field name="res_model">liteapi.hotel</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

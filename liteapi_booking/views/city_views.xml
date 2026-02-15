@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_liteapi_city_tree" model="ir.ui.view">
+        <field name="name">liteapi.city.tree</field>
+        <field name="model">liteapi.city</field>
+        <field name="arch" type="xml">
+            <tree string="Cities" editable="bottom">
+                <field name="name"/>
+                <field name="liteapi_city_id"/>
+                <field name="country_id"/>
+                <field name="is_active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_liteapi_city_search" model="ir.ui.view">
+        <field name="name">liteapi.city.search</field>
+        <field name="model">liteapi.city</field>
+        <field name="arch" type="xml">
+            <search string="Search Cities">
+                <field name="name"/>
+                <field name="liteapi_city_id"/>
+                <filter string="Active" name="active" domain="[('is_active', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_liteapi_city" model="ir.actions.act_window">
+        <field name="name">Cities</field>
+        <field name="res_model">liteapi.city</field>
+        <field name="view_mode">tree</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a new city
+          </p>
+        </field>
+    </record>
+</odoo>

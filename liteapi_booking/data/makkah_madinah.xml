@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Country: Saudi Arabia -->
+        <record id="liteapi_country_sa" model="liteapi.country">
+            <field name="name">Saudi Arabia</field>
+            <field name="code">SA</field>
+        </record>
+
+        <!-- City: Makkah -->
+        <record id="liteapi_city_makkah" model="liteapi.city">
+            <field name="name">Makkah</field>
+            <field name="liteapi_city_id">SA-MAK</field> <!-- Placeholder ID -->
+            <field name="country_id" ref="liteapi_country_sa"/>
+            <field name="is_active">True</field>
+        </record>
+
+        <!-- City: Madinah -->
+        <record id="liteapi_city_madinah" model="liteapi.city">
+            <field name="name">Madinah</field>
+            <field name="liteapi_city_id">SA-MED</field> <!-- Placeholder ID -->
+            <field name="country_id" ref="liteapi_country_sa"/>
+            <field name="is_active">True</field>
+        </record>
+    </data>
+</odoo>

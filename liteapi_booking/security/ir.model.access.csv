@@ -1,0 +1,17 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_liteapi_country_user,liteapi.country.user,model_liteapi_country,base.group_user,1,1,1,1
+access_liteapi_city_user,liteapi.city.user,model_liteapi_city,base.group_user,1,1,1,1
+access_liteapi_hotel_user,liteapi.hotel.user,model_liteapi_hotel,base.group_user,1,1,1,1
+access_liteapi_audit_log_user,liteapi.audit.log.user,model_liteapi_audit_log,base.group_user,1,0,0,0
+access_liteapi_search_cache_user,liteapi.search.cache.user,model_liteapi_search_cache,base.group_user,1,1,1,1
+access_liteapi_room_rate_user,liteapi.room.rate.user,model_liteapi_room_rate,base.group_user,1,1,1,1
+access_liteapi_booking_user,liteapi.booking.user,model_liteapi_booking,base.group_user,1,1,1,1
+access_customer_wallet_user,customer.wallet.user,model_customer_wallet,base.group_user,1,0,0,0
+access_wallet_transaction_user,wallet.transaction.user,model_wallet_transaction,base.group_user,1,0,0,0
+access_liteapi_refund_audit_user,liteapi.refund.audit.user,model_liteapi_refund_audit,base.group_user,1,0,0,0
+access_liteapi_refund_wizard_user,liteapi.refund.wizard.user,model_liteapi_refund_wizard,base.group_user,1,1,1,1
+access_liteapi_abuse_report_user,liteapi.abuse.report.user,model_liteapi_abuse_report,base.group_user,1,0,0,0
+access_liteapi_admin_dashboard_user,liteapi.admin.dashboard.user,model_liteapi_admin_dashboard,base.group_user,1,0,0,0
+access_liteapi_country_public,liteapi.country.public,model_liteapi_country,base.group_public,1,0,0,0
+access_liteapi_city_public,liteapi.city.public,model_liteapi_city,base.group_public,1,0,0,0
+access_liteapi_hotel_public,liteapi.hotel.public,model_liteapi_hotel,base.group_public,1,0,0,0

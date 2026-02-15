@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_branding_styles" inherit_id="portal.portal_layout">
+        <xpath expr="//div[hasclass('o_portal_wrap')]" position="before">
+            <style>
+                :root {
+                    --brand-dark-blue: #0A2E5A;
+                    --brand-green: #27AE60;
+                    --brand-orange: #F39C12;
+                    --brand-yellow: #F1C40F;
+                    --brand-red: #E74C3C;
+                    --brand-light-blue: #E8F4FD;
+                    --brand-text: #212529;
+                }
+                .text-brand-primary { color: var(--brand-dark-blue) !important; }
+                .bg-brand-primary { background-color: var(--brand-dark-blue) !important; color: white; }
+                .b-bg-light { background-color: var(--brand-light-blue) !important; }
+                
+                /* Badges */
+                .badge-confirmed { background-color: var(--brand-green); color: white; }
+                .badge-failed { background-color: var(--brand-red); color: white; }
+                .badge-warning { background-color: var(--brand-orange); color: white; }
+                
+                /* Buttons */
+                .btn-b-primary {
+                    background-color: var(--brand-dark-blue);
+                    color: white;
+                    border: 1px solid var(--brand-dark-blue);
+                }
+                .btn-b-primary:hover {
+                    background-color: #061f3d;
+                    color: white;
+                }
+            </style>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home_menu_booking" name="Portal layout : booking menu_entries" inherit_id="portal.portal_breadcrumbs" priority="20">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'dashboard'" class="breadcrumb-item active">لوحة التحكم</li>
+            <li t-if="page_name == 'booking'" class="breadcrumb-item">
+                <a t-if="booking" t-attf-href="/my/bookings?{{ keep_query() }}">حجوزاتي</a>
+                <t t-else="">حجوزاتي</t>
+            </li>
+            <li t-if="booking" class="breadcrumb-item active">
+                <t t-esc="booking.name"/>
+            </li>
+            <li t-if="page_name == 'wallet'" class="breadcrumb-item active">المحفظة</li>
+        </xpath>
+    </template>
+    
+    <template id="portal_my_home_booking" name="Show Bookings" inherit_id="portal.portal_my_home" priority="20">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">حجوزات الفنادق</t>
+                <t t-set="url" t-value="'/my/bookings'"/>
+                <t t-set="placeholder_count" t-value="'booking_count'"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">المحفظة</t>
+                <t t-set="url" t-value="'/my/wallet'"/>
+                <t t-set="count" t-value="0"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_my_dashboard" name="My Dashboard">
+        <t t-call="portal.portal_layout">
+            <div class="row mt-4">
+                <div class="col-md-6 mb-4">
+                     <div class="card border-0 shadow-sm h-100" style="background-color: var(--brand-dark-blue); color: white;">
+                        <div class="card-body p-4 position-relative">
+                            <h5 class="card-title text-white-50 small fw-bold">رصيد المحفظة</h5>
+                            <h2 class="display-4 fw-bold mt-3 mb-4">
+                                <span t-field="wallet.balance" t-options='{"widget": "monetary", "display_currency": wallet.currency_id}'/>
+                            </h2>
+                            <a href="/my/wallet" class="btn btn-light fw-bold px-4 stretched-link" style="color: var(--brand-dark-blue);">عرض التفاصيل</a>
+                            <i class="fa fa-wallet fa-5x position-absolute" style="bottom: -10px; left: 20px; opacity: 0.1;"></i>
+                        </div>
+                     </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                     <div class="card border-0 shadow-sm h-100 bg-white" style="border-top: 4px solid var(--brand-green) !important;">
+                        <div class="card-body p-4 d-flex flex-column justify-content-center text-center">
+                            <h5 class="text-muted small fw-bold">إجمالي الحجوزات</h5>
+                            <h2 class="display-4 fw-bold" style="color: var(--brand-text);"><t t-esc="len(bookings)"/></h2>
+                            <div class="mt-3">
+                                <a href="/my/bookings" class="btn btn-outline-secondary">إدارة الحجوزات</a>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+            
+            <h5 class="mb-3 fw-bold" style="color: var(--brand-text);">آخر النشاطات</h5>
+            <div class="card border-0 shadow-sm">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="b-bg-light">
+                        <tr>
+                             <th class="border-0 ps-4 py-3">المرجع</th>
+                             <th class="border-0 py-3">الفندق</th>
+                             <th class="border-0 py-3">التاريخ</th>
+                             <th class="border-0 py-3 text-end pe-4">الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-if="not bookings">
+                            <tr><td colspan="4" class="text-center py-4 text-muted">لا توجد حجوزات حديثة.</td></tr>
+                        </t>
+                        <tr t-foreach="bookings" t-as="booking">
+                            <td class="ps-4 fw-bold"><a t-attf-href="/my/bookings/#{booking.id}" class="text-decoration-none text-brand-primary"><t t-esc="booking.name"/></a></td>
+                            <td><span t-field="booking.hotel_id"/></td>
+                            <td><span t-field="booking.checkin_date"/></td>
+                            <td class="text-end pe-4">
+                                <span t-if="booking.status == 'confirmed'" class="badge badge-confirmed px-3 rounded-pill">مؤكد</span>
+                                <span t-if="booking.status == 'failed'" class="badge badge-failed px-3 rounded-pill">فشل</span>
+                                <span t-if="booking.status == 'draft'" class="badge badge-warning px-3 rounded-pill">مسودة</span>
+                                <span t-if="booking.status == 'cancelled'" class="badge bg-secondary px-3 rounded-pill">ملغى</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_my_bookings" name="My Bookings">
+        <t t-call="portal.portal_layout">
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">حجوزاتي</t>
+            </t>
+            
+            <div class="card border-0 shadow-sm mt-3">
+                 <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                         <thead class="b-bg-light">
+                            <tr>
+                                <th class="py-3 ps-4">المرجع</th>
+                                <th class="py-3">الفندق</th>
+                                <th class="py-3">التواريخ</th>
+                                <th class="py-3 text-end pe-4">الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="not bookings">
+                                <tr>
+                                    <td colspan="4" class="text-center p-5">
+                                        <div class="text-muted">لا توجد حجوزات سابقة.</div>
+                                        <a href="/hotel/search" class="btn btn-b-primary btn-sm mt-2">احجز رحلتك الآن</a>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-foreach="bookings" t-as="booking">
+                                <tr>
+                                    <td class="ps-4 fw-bold">
+                                        <a t-attf-href="/my/bookings/#{booking.id}" class="text-brand-primary text-decoration-none">
+                                            <t t-esc="booking.name"/>
+                                        </a>
+                                    </td>
+                                    <td><span t-field="booking.hotel_id" class="fw-bold"/></td>
+                                    <td class="small text-muted">
+                                        <i class="fa fa-calendar me-1"></i> <span t-field="booking.checkin_date"/> 
+                                        <i class="fa fa-arrow-left mx-1"></i> <span t-field="booking.checkout_date"/>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <span t-if="booking.status == 'confirmed'" class="badge badge-confirmed">مؤكد</span>
+                                        <span t-if="booking.status == 'failed'" class="badge badge-failed">فشل</span>
+                                        <span t-if="booking.status == 'cancelled'" class="badge bg-dark">ملغى</span>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                 <div t-if="pager" class="o_portal_pager text-center p-3 border-top">
+                    <t t-call="portal.pager"/>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_booking_detail" name="Booking Detail">
+         <t t-call="portal.portal_layout">
+            <div class="container bg-white p-5 shadow-sm mt-4 rounded border" style="border-color: var(--brand-border) !important;">
+                 <div class="row align-items-center mb-4 border-bottom pb-4">
+                    <div class="col-md-8">
+                        <span class="badge mb-2 bg-brand-primary">حجز فندقي</span>
+                        <h2 class="fw-bold mb-1 text-brand-primary"><span t-field="booking.hotel_id"/></h2>
+                        <h5 class="text-muted"><i class="fa fa-bed me-2"></i><span t-field="booking.room_type"/></h5>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <h4 class="mb-0">
+                            <span t-if="booking.status == 'confirmed'" class="fw-bold" style="color: var(--brand-green);"><i class="fa fa-check-circle"></i> مؤكد</span>
+                            <span t-if="booking.status == 'cancelled'" class="fw-bold" style="color: var(--brand-red);"><i class="fa fa-times-circle"></i> ملغى</span>
+                        </h4>
+                        <p class="text-muted small mt-1 mb-0">رقم التأكيد: <span class="fw-bold font-monospace text-dark" t-field="booking.liteapi_booking_id"/></p>
+                    </div>
+                 </div>
+                 
+                 <div class="row g-4">
+                     <div class="col-md-4">
+                         <div class="p-3 b-bg-light rounded h-100 border">
+                            <h6 class="text-muted small fw-bold mb-3">الدخول</h6>
+                            <h4 class="fw-bold text-brand-primary mb-0"><span t-field="booking.checkin_date"/></h4>
+                         </div>
+                     </div>
+                     <div class="col-md-4">
+                         <div class="p-3 b-bg-light rounded h-100 border">
+                            <h6 class="text-muted small fw-bold mb-3">الخروج</h6>
+                            <h4 class="fw-bold text-brand-primary mb-0"><span t-field="booking.checkout_date"/></h4>
+                         </div>
+                     </div>
+                     <div class="col-md-4">
+                         <div class="p-3 b-bg-light rounded h-100 border">
+                            <h6 class="text-muted small fw-bold mb-3">الضيوف</h6>
+                            <h4 class="fw-bold text-dark mb-0"><span t-field="booking.guests"/> بالغين</h4>
+                         </div>
+                     </div>
+                 </div>
+                 
+                 <div class="mt-5 text-center">
+                    <a href="/my/bookings" class="btn btn-outline-secondary"><i class="fa fa-arrow-right me-2"></i>عودة للحجوزات</a>
+                    <a t-if="booking.status == 'confirmed'" href="#" class="btn btn-b-primary ms-2"><i class="fa fa-print me-2"></i>طباعة التذكرة</a>
+                 </div>
+            </div>
+         </t>
+    </template>
+    
+    <template id="portal_my_wallet" name="My Wallet">
+        <t t-call="portal.portal_layout">
+             <div class="container mt-4">
+                <div class="card text-center mb-5 border-0 shadow overflow-hidden">
+                    <div class="card-header text-white py-3 fw-bold" style="background-color: var(--brand-dark-blue);">
+                        المحفظة والمكافآت
+                    </div>
+                    <div class="card-body py-5" style="background: linear-gradient(to bottom, #f8f9fa, #fff);">
+                         <h6 class="text-muted fw-bold">الرصيد المتاح</h6>
+                         <h1 class="display-3 fw-bold my-3 text-brand-primary">
+                             <span t-field="wallet.balance" t-options='{"widget": "monetary", "display_currency": wallet.currency_id}'/>
+                         </h1>
+                         <p class="text-muted small">يمكنك استخدام هذا الرصيد لحجزك القادم.</p>
+                    </div>
+                </div>
+                
+                <h4 class="fw-bold mb-3 text-brand-primary">سجل العمليات</h4>
+                <div class="card border-0 shadow-sm">
+                    <table class="table table-striped mb-0 align-middle">
+                        <thead class="text-white" style="background-color: var(--brand-text);">
+                            <tr>
+                                <th class="py-3 ps-4">التاريخ</th>
+                                <th class="py-3">النوع</th>
+                                <th class="py-3">المرجع</th>
+                                <th class="py-3 text-end pe-4">المبلغ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="transactions" t-as="tx">
+                                 <td class="ps-4"><span t-field="tx.date" t-options='{"widget": "date"}'/></td>
+                                 <td>
+                                    <span t-if="tx.type == 'topup'" class="badge badge-confirmed">شحن</span>
+                                    <span t-if="tx.type == 'booking'" class="badge bg-primary">دفع</span>
+                                    <span t-if="tx.type == 'refund'" class="badge badge-warning">استرداد</span>
+                                 </td>
+                                 <td class="font-monospace text-muted small"><span t-field="tx.reference"/></td>
+                                 <td class="text-end pe-4 fw-bold">
+                                    <span t-att-class="'text-brand-green' if tx.amount > 0 else 'text-brand-red'">
+                                        <t t-if="tx.amount > 0">+</t><span t-field="tx.amount" t-options='{"widget": "monetary", "display_currency": tx.currency_id}'/>
+                                    </span>
+                                 </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+             </div>
+        </t>
+    </template>
+
+    <template id="checkout_page" name="Secure Checkout">
+        <t t-call="website.layout">
+            <t t-call="liteapi_booking.liteapi_booking_styles"/>
+            
+            <div class="container mt-5 mb-5">
+                <div class="row">
+                    <div class="col-lg-4 order-lg-last mb-4">
+                        <div class="b-card p-4 bg-light border-0 sticky-top" style="top: 100px;">
+                            <h5 class="fw-bold b-text-primary mb-3">ملخص الحجز</h5>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">السعر الإجمالي</span>
+                                <span class="fw-bold"><t t-esc="session_data['price']"/> <t t-esc="session_data['currency']"/></span>
+                            </div>
+                            <hr class="text-muted"/>
+                            <div class="small text-muted mb-3">
+                                <i class="fa fa-info-circle me-1"></i> شامل الضرائب والرسوم
+                            </div>
+                            <div class="alert alert-info small border-0">
+                                <i class="fa fa-lock me-1"></i> عملية الدفع آمنة ومشفرة 100%
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="b-card p-4 mb-4">
+                            <h4 class="fw-bold mb-4 b-text-primary"><i class="fa fa-user me-2"></i>بيانات النزيل</h4>
+                            <form id="guest-form">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold">الاسم الأول</label>
+                                        <input type="text" class="form-control" name="first_name" required="required" placeholder="كما يظهر في جواز السفر"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold">الاسم الأخير</label>
+                                        <input type="text" class="form-control" name="last_name" required="required"/>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small fw-bold">البريد الإلكتروني</label>
+                                        <input type="email" class="form-control" name="email" required="required" placeholder="لاستلام تأكيد الحجز"/>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="b-card p-4">
+                            <h4 class="fw-bold mb-4 b-text-primary"><i class="fa fa-credit-card me-2"></i>الدفع الآمن</h4>
+                            
+                            <div id="liteapi-payment-element" style="min-height: 400px; background: white; border-radius: 8px; padding: 10px;">
+                                <div class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-3 text-muted">جاري تحميل بوابة الدفع الآمنة...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://payment-wrapper.liteapi.travel/dist/liteAPIPayment.js?v=2.0"></script>
+            
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    // 1. Guest Data Handling (Simple Autosave)
+                    const guestInputs = document.querySelectorAll('#guest-form input');
+                    function saveGuestData() {
+                        const data = {
+                            first_name: document.querySelector('input[name="first_name"]').value,
+                            last_name: document.querySelector('input[name="last_name"]').value,
+                            email: document.querySelector('input[name="email"]').value,
+                        };
+                        // Send to server quietly
+                        fetch('/hotel/save_guest', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ params: data })
+                        });
+                    }
+                    guestInputs.forEach(input => input.addEventListener('change', saveGuestData));
+
+                    // 2. Initialize Payment SDK
+                    if (typeof LiteAPIPayment === 'undefined') {
+                        document.getElementById('liteapi-payment-element').innerHTML = '<div class="alert alert-danger">خطأ في تحميل بوابة الدفع. تأكد من الاتصال بالإنترنت.</div>';
+                        return;
+                    }
+
+                    var config = {
+                        publickey: '<t t-esc="public_key"/>', 
+                        appearance: {
+                            theme: 'flat',
+                        },
+                        options: {
+                            business: { name: 'iRoom Booking' }
+                        },
+                        targetElement: '#liteapi-payment-element',
+                        secretKey: '<t t-esc="session_data.get(\'secret_key\')"/>',
+                        returnUrl: window.location.origin + '<t t-esc="return_url"/>'
+                    };
+
+                    console.log('Initializing Payment SDK...');
+                    try {
+                        var liteAPIPayment = new LiteAPIPayment(config);
+                        liteAPIPayment.handlePayment();
+                    } catch(e) {
+                        console.error("SDK Error:", e);
+                    }
+                });
+            </script>
+        </t>
+    </template>
+
+    <template id="confirmation_page" name="Booking Confirmation">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5 text-center">
+                <div class="card border-0 shadow-sm p-5 mx-auto" style="max-width: 600px;">
+                    <div class="mb-4 text-success">
+                        <i class="fa fa-check-circle fa-5x"></i>
+                    </div>
+                    <h2 class="fw-bold text-brand-primary mb-3">تم تأكيد الحجز بنجاح!</h2>
+                    <p class="text-muted">شكراً لك. تم إرسال تفاصيل الحجز إلى بريدك الإلكتروني.</p>
+                    
+                    <hr class="my-4"/>
+                    
+                    <div class="row text-start mb-4">
+                        <div class="col-6">
+                            <small class="text-muted d-block">رقم المرجع</small>
+                            <span class="fw-bold"><t t-esc="booking.liteapi_booking_id"/></span>
+                        </div>
+                        <div class="col-6 text-end">
+                            <small class="text-muted d-block">الحالة</small>
+                            <span class="badge badge-confirmed">مؤكد</span>
+                        </div>
+                    </div>
+                    
+                    <a href="/my/bookings" class="btn btn-b-primary w-100">عرض حجوزاتي</a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

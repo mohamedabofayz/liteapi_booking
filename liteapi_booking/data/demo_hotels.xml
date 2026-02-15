@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="hotel_makkah_1" model="liteapi.hotel">
+            <field name="name">Pullman Zamzam Makkah</field>
+            <field name="liteapi_hotel_id">lp3803c</field>
+            <field name="city_id" ref="liteapi_booking.liteapi_city_makkah"/>
+            <field name="is_cached">True</field>
+        </record>
+
+        <record id="hotel_makkah_2" model="liteapi.hotel">
+            <field name="name">Swissotel Makkah</field>
+            <field name="liteapi_hotel_id">lp12345</field> <field name="city_id" ref="liteapi_booking.liteapi_city_makkah"/>
+            <field name="is_cached">True</field>
+        </record>
+
+        <record id="hotel_makkah_3" model="liteapi.hotel">
+            <field name="name">Makkah Clock Royal Tower, A Fairmont Hotel</field>
+            <field name="liteapi_hotel_id">lp10001</field>
+            <field name="city_id" ref="liteapi_booking.liteapi_city_makkah"/>
+            <field name="is_cached">True</field>
+        </record>
+
+        <record id="hotel_madinah_1" model="liteapi.hotel">
+            <field name="name">Anwar Al Madinah Mövenpick</field>
+            <field name="liteapi_hotel_id">lp20001</field>
+            <field name="city_id" ref="liteapi_booking.liteapi_city_madinah"/>
+            <field name="is_cached">True</field>
+        </record>
+        
+        <record id="hotel_madinah_2" model="liteapi.hotel">
+            <field name="name">Madinah Hilton</field>
+            <field name="liteapi_hotel_id">lp20002</field>
+            <field name="city_id" ref="liteapi_booking.liteapi_city_madinah"/>
+            <field name="is_cached">True</field>
+        </record>
+    </data>
+</odoo>
