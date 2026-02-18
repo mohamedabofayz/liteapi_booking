@@ -85,6 +85,11 @@
             .search-btn:hover { background-color: #1a3a6c; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(42, 75, 124, 0.2); }
             .nav-pills .nav-link { color: var(--new-btn-blue); background-color: white; border: 1px solid var(--new-input-border); margin: 0 5px; }
             .nav-pills .nav-link.active { background-color: var(--new-btn-blue); color: white; border-color: var(--new-btn-blue); }
+            
+            /* New Styles for Room Details Page */
+            .room-feature-icon { width: 24px; text-align: center; color: var(--brand-dark-blue); margin-inline-end: 10px; }
+            .policy-box { background: #f8f9fa; border-left: 4px solid var(--brand-orange); padding: 15px; border-radius: 4px; }
+            [dir="rtl"] .policy-box { border-left: none; border-right: 4px solid var(--brand-orange); }
         </style>
     </template>
 
@@ -203,21 +208,30 @@
                 <div class="row">
                     <div class="col-lg-3 d-none d-lg-block">
                         <div class="b-card p-3 mb-3">
-                            <h6 class="fw-bold mb-3 b-text-primary">تصفية النتائج</h6>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" checked="checked"/>
-                                <label class="form-check-label small">المتاحة فقط</label>
-                            </div>
-                            <hr style="border-color: var(--brand-border);"/>
-                            <h6 class="fw-bold mb-3 b-text-primary">عدد النجوم</h6>
-                            <t t-foreach="range(5, 2, -1)" t-as="stars">
-                                <div class="form-check mb-1">
-                                    <input class="form-check-input" type="checkbox"/>
-                                    <label class="form-check-label small text-warning">
-                                        <t t-foreach="range(stars)" t-as="s"><i class="fa fa-star"></i></t>
-                                    </label>
+                            <form action="/hotel/results" method="post">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="search_type" t-att-value="search_params.get('search_type')"/>
+                                <input type="hidden" name="search_query" t-att-value="search_params.get('search_value')"/>
+                                <input type="hidden" name="checkin" t-att-value="search_params.get('checkin')"/>
+                                <input type="hidden" name="checkout" t-att-value="search_params.get('checkout')"/>
+                                <input type="hidden" name="guests" t-att-value="search_params.get('guests')"/>
+
+                                <h6 class="fw-bold mb-3 b-text-primary">تصفية النتائج</h6>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="available_only" checked="checked"/>
+                                    <label class="form-check-label small">المتاحة فقط</label>
                                 </div>
-                            </t>
+                                <hr style="border-color: var(--brand-border);"/>
+                                <h6 class="fw-bold mb-3 b-text-primary">عدد النجوم</h6>
+                                <t t-foreach="range(5, 0, -1)" t-as="stars">
+                                    <div class="form-check mb-1">
+                                        <input class="form-check-input" type="checkbox" name="stars" t-att-value="stars" onchange="this.form.submit()" t-att-checked="'checked' if selected_stars and stars in selected_stars else None"/>
+                                        <label class="form-check-label small text-warning">
+                                            <t t-foreach="range(stars)" t-as="s"><i class="fa fa-star"></i></t>
+                                        </label>
+                                    </div>
+                                </t>
+                            </form>
                         </div>
                     </div>
                     <div class="col-lg-9">
@@ -245,6 +259,9 @@
                                                 </a>
                                                 <div class="small text-muted mt-1" t-if="hotel.get('address')">
                                                     <i class="fa fa-map-marker me-1"></i> <t t-esc="hotel['address']"/>
+                                                </div>
+                                                <div class="small text-muted mt-2" style="line-height: 1.4;" t-if="hotel.get('short_description')">
+                                                    <t t-esc="hotel['short_description']"/>
                                                 </div>
                                             </div>
                                             <span class="text-nowrap ms-2" style="color: var(--brand-orange);">
@@ -335,7 +352,8 @@
                         <div class="col-lg-12">
                             <div class="mb-5">
                                 <h5 class="fw-bold mb-3 b-text-primary">عن الفندق</h5>
-                                <p class="text-muted" t-out="hotel_info['description']"/>
+                                <p class="text-muted" t-if="hotel_info.get('description')" t-out="hotel_info['description']"/>
+                                <p class="text-muted" t-else="">لا يوجد وصف متاح لهذا الفندق.</p>
                                 <div class="mt-3 d-flex flex-wrap gap-2">
                                     <t t-foreach="hotel_info['facilities'][:8]" t-as="facility">
                                         <span class="badge bg-light text-dark border"><i class="fa fa-check text-brand-green me-1"></i> <t t-esc="facility"/></span>
@@ -376,8 +394,11 @@
                                                             <div class="small">
                                                                 <span t-if="rate['refundable']" class="text-brand-green fw-bold"><i class="fa fa-check"></i> إلغاء مجاني</span>
                                                                 <span t-else="" class="text-danger"><i class="fa fa-ban"></i> غير قابل للاسترداد</span>
-                                                                <div t-if="rate['cancellation_deadline']" class="text-muted mt-1" style="font-size: 0.8rem;">
+                                                                <div t-if="rate.get('cancellation_deadline')" class="text-muted mt-1" style="font-size: 0.8rem;">
                                                                     آخر موعد للإلغاء: <t t-esc="rate['cancellation_deadline']"/>
+                                                                </div>
+                                                                <div t-if="rate.get('description')" class="text-muted small mt-1">
+                                                                     <i class="fa fa-info-circle text-primary"></i> <t t-esc="rate['description']"/>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -389,13 +410,26 @@
                                                             <div class="small text-muted">شامل الضرائب والرسوم</div>
                                                         </td>
                                                         <td class="pe-4 text-end">
-                                                            <form action="/hotel/prebook" method="POST">
+                                                            <form action="/booking/room/details" method="POST">
                                                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                                
                                                                 <input type="hidden" name="hotel_lite_id" t-att-value="hotel_lite_id"/>
                                                                 <input type="hidden" name="offer_id" t-att-value="rate['offer_id']"/>
                                                                 <input type="hidden" name="price" t-att-value="rate['price']"/>
-                                                                <button type="submit" class="btn btn-b-cta btn-sm w-100">
-                                                                    حجز الآن
+                                                                
+                                                                <input type="hidden" name="room_name" t-att-value="group['name']"/>
+                                                                <input type="hidden" name="rate_name" t-att-value="rate['name']"/>
+                                                                <input type="hidden" name="room_image" t-att-value="group['image']"/>
+                                                                <input type="hidden" name="room_description" t-att-value="rate['description']"/>
+                                                                <input type="hidden" name="cancellation_deadline" t-att-value="rate.get('cancellation_deadline')"/>
+                                                                <input type="hidden" name="is_refundable" t-att-value="rate['refundable']"/>
+
+                                                                <input type="hidden" name="checkin" t-att-value="search_params['checkin']"/>
+                                                                <input type="hidden" name="checkout" t-att-value="search_params['checkout']"/>
+                                                                <input type="hidden" name="guests" t-att-value="search_params['guests']"/>
+                                                                
+                                                                <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">
+                                                                    اختر الغرفة <i class="fa fa-arrow-left ms-1"></i>
                                                                 </button>
                                                             </form>
                                                         </td>
@@ -405,6 +439,118 @@
                                         </div>
                                     </div>
                                 </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="room_details_template" name="Room Details">
+        <t t-call="website.layout">
+            <t t-call="liteapi_booking.liteapi_booking_styles"/>
+            <div class="b-bg-light pb-5 pt-4">
+                <div class="container">
+                    <div class="mb-3">
+                        <a t-attf-href="/booking/view/#{details['hotel_lite_id']}" class="text-decoration-none text-muted fw-bold">
+                            <i class="fa fa-arrow-right me-1"></i> العودة للفندق
+                        </a>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-lg-8">
+                            <div class="b-card p-0 overflow-hidden mb-4">
+                                <div class="position-relative" style="height: 400px;">
+                                    <img t-att-src="details['room_image']" class="w-100 h-100" style="object-fit: cover;" onerror="this.src='/web/static/src/img/placeholder.png'"/>
+                                    <div class="position-absolute bottom-0 start-0 w-100 p-3" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                                        <h2 class="text-white fw-bold mb-0"><t t-esc="details['room_name']"/></h2>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <h5 class="fw-bold text-brand-primary mb-3">تفاصيل العرض</h5>
+                                    <p class="lead mb-4"><t t-esc="details['rate_name']"/></p>
+                                    
+                                    <hr class="text-muted opacity-25"/>
+                                    
+                                    <h6 class="fw-bold mb-3">الوصف والمميزات</h6>
+                                    <div class="text-muted mb-4" style="line-height: 1.8;">
+                                        <t t-if="details.get('room_description')">
+                                            <t t-out="details['room_description']"/>
+                                        </t>
+                                        <t t-else="">
+                                            غرفة مريحة مزودة بكافة وسائل الراحة الأساسية لضمان إقامة ممتعة.
+                                        </t>
+                                    </div>
+
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-md-6"><i class="fa fa-wifi room-feature-icon"></i> واي فاي مجاني</div>
+                                        <div class="col-md-6"><i class="fa fa-tv room-feature-icon"></i> تلفاز مسطح</div>
+                                        <div class="col-md-6"><i class="fa fa-snowflake-o room-feature-icon"></i> تكييف هواء</div>
+                                        <div class="col-md-6"><i class="fa fa-coffee room-feature-icon"></i> آلة صنع القهوة</div>
+                                    </div>
+
+                                    <div class="policy-box mt-4">
+                                        <h6 class="fw-bold mb-2">سياسة الإلغاء</h6>
+                                        <div t-if="details.get('is_refundable') == 'True'" class="text-success">
+                                            <i class="fa fa-check-circle me-1"></i> <strong>إلغاء مجاني</strong>
+                                            <div t-if="details.get('cancellation_deadline')" class="small mt-1 text-dark">
+                                                حتى تاريخ: <span dir="ltr"><t t-esc="details['cancellation_deadline']"/></span>
+                                            </div>
+                                        </div>
+                                        <div t-else="" class="text-danger">
+                                            <i class="fa fa-times-circle me-1"></i> <strong>غير قابل للاسترداد</strong>
+                                            <div class="small mt-1 text-dark">
+                                                لا يمكن استرداد المبلغ عند الإلغاء أو التعديل.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="b-card p-4 sticky-top" style="top: 20px;">
+                                <h5 class="fw-bold mb-4 text-brand-primary">ملخص الحجز</h5>
+                                
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">تاريخ الوصول</span>
+                                    <span class="fw-bold"><t t-esc="details['checkin']"/></span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="text-muted">تاريخ المغادرة</span>
+                                    <span class="fw-bold"><t t-esc="details['checkout']"/></span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="text-muted">الضيوف</span>
+                                    <span class="fw-bold"><t t-esc="details['guests']"/> بالغين</span>
+                                </div>
+
+                                <hr class="text-muted opacity-25"/>
+
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <span class="text-dark fw-bold h5 mb-0">الإجمالي</span>
+                                    <span class="text-brand-primary fw-bold h4 mb-0">SAR <t t-esc="details['price']"/></span>
+                                </div>
+
+                                <form action="/hotel/prebook" method="POST">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="hotel_lite_id" t-att-value="details['hotel_lite_id']"/>
+                                    <input type="hidden" name="offer_id" t-att-value="details['offer_id']"/>
+                                    <input type="hidden" name="price" t-att-value="details['price']"/>
+                                    
+                                    <input type="hidden" name="checkin" t-att-value="details['checkin']"/>
+                                    <input type="hidden" name="checkout" t-att-value="details['checkout']"/>
+                                    <input type="hidden" name="guests" t-att-value="details['guests']"/>
+                                    
+                                    <button type="submit" class="btn btn-b-cta w-100 py-3 fw-bold fs-5 shadow-sm">
+                                        إتمام الحجز <i class="fa fa-check-circle ms-2"></i>
+                                    </button>
+                                </form>
+                                
+                                <div class="text-center mt-3 small text-muted">
+                                    <i class="fa fa-lock me-1"></i> حجز آمن ومؤكد
+                                </div>
                             </div>
                         </div>
                     </div>

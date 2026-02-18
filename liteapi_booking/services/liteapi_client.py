@@ -8,18 +8,18 @@ from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
-# القائمة المسموحة (تم التحديث لإضافة روابط الدفع والبحث الجديد)
 ALLOWED_ENDPOINTS = [
     '/hotels/rates',
+    '/hotels/min-rates',
     '/hotels/details',
     '/rates',
     '/booking',
-    '/rates/prebook',  # لدعم مرحلة Prebook الجديدة
-    '/rates/book',     # لدعم مرحلة التثبيت النهائية
+    '/rates/prebook',
+    '/rates/book',
     '/data/cities',
     '/data/hotels',
     '/data/hotel',
-    '/data/places'     # جديد: لدعم البحث بالأماكن (Place Search)
+    '/data/places'
 ]
 
 class LiteAPIClient(models.AbstractModel):
@@ -28,7 +28,6 @@ class LiteAPIClient(models.AbstractModel):
 
     @api.model
     def _get_config(self):
-        """جلب إعدادات الاتصال من إعدادات النظام"""
         ICP = self.env['ir.config_parameter'].sudo()
         base_url = ICP.get_param('liteapi.base_url')
         api_key = ICP.get_param('liteapi.api_key')
@@ -36,23 +35,24 @@ class LiteAPIClient(models.AbstractModel):
 
     @api.model
     def _log_call(self, endpoint, result, details=""):
-        """تسجيل العمليات في سجل التدقيق"""
+        """
+        تسجيل العمليات في السجل مع دعم النصوص الطويلة.
+        """
         try:
             self.env['liteapi.audit.log'].sudo().create({
                 'name': endpoint,
                 'user_id': self.env.uid,
                 'result': result,
-                'details': details[:1000]
+                # [MODIFIED] تمت إزالة القيد [:1000] للسماح بتسجيل كامل المحتوى
+                'details': details 
             })
-        except:
-            pass
+        except Exception as e:
+            _logger.error(f"Failed to write to audit log: {e}")
 
     @api.model
     def check_safety(self, endpoint):
-        """التحقق من أن الرابط المطلوب مسموح به"""
         is_allowed = False
         for allowed in ALLOWED_ENDPOINTS:
-            # السماح بالتطابق التام أو البدء بالرابط (لدعم المتغيرات في الرابط)
             if endpoint == allowed or endpoint.startswith(allowed + '?') or endpoint.startswith(allowed + '/'):
                  is_allowed = True
                  break
@@ -61,10 +61,15 @@ class LiteAPIClient(models.AbstractModel):
         return True
 
     @api.model
-    def make_request(self, endpoint, method='GET', **kwargs):
-        """تنفيذ طلب HTTP آمن"""
+    def make_request(self, endpoint, method='GET', custom_base_url=None, **kwargs):
+        """
+        تنفيذ طلب HTTP مع تسجيل تفصيلي (Full Logging) للإرسال والاستقبال.
+        """
         self.check_safety(endpoint)
         base_url, api_key = self._get_config()
+        
+        if custom_base_url:
+            base_url = custom_base_url
         
         if not base_url or not api_key:
             raise UserError("Configuration Error: Missing Base URL or API Key")
@@ -81,13 +86,11 @@ class LiteAPIClient(models.AbstractModel):
         except Exception as e:
             raise UserError(f"Invalid URL Format: {full_url}")
 
-        # معالجة المعاملات (Params)
         params = kwargs.get('params', {})
         if params:
             query_string = urllib.parse.urlencode(params)
             path = f"{path}?{query_string}"
 
-        # معالجة جسم الطلب (Body)
         body = None
         if method.upper() == 'POST':
             json_payload = kwargs.get('json', {})
@@ -97,14 +100,23 @@ class LiteAPIClient(models.AbstractModel):
             "X-API-Key": api_key,
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "Accept-Language": self.env.context.get('lang', 'en_US')[:2], 
             "User-Agent": "Odoo-Native-Client/1.0",
             "Connection": "close"
         }
 
+        # إعداد متغير لتجميع تفاصيل السجل
+        log_details = f"=== REQUEST ===\nURL: {method} {full_url}\n"
+        if body:
+            log_details += f"Body:\n{body}\n"
+        else:
+            log_details += "Body: [Empty]\n"
+
         try:
-            _logger.info(f"⚡ Native HTTP Request to: https://{host}{path}")
+            _logger.info(f"⚡ Request: {method} {full_url}")
+            if body:
+                _logger.info(f"📦 Body: {body}")
             
-            # إنشاء سياق SSL (غير مفعل التحقق للتطوير، يفضل تفعيله في الإنتاج)
             context = ssl._create_unverified_context()
             conn = http.client.HTTPSConnection(host, port=443, timeout=45, context=context)
             
@@ -116,17 +128,31 @@ class LiteAPIClient(models.AbstractModel):
 
             response_text = response_data.decode('utf-8')
             
+            # إضافة الرد إلى السجل
+            log_details += f"\n=== RESPONSE ===\nStatus: {response.status}\nBody:\n{response_text}"
+
+            _logger.info(f"✨ Response Status: {response.status}")
+            if response.status not in [200, 201]:
+                 _logger.warning(f"⚠️ Response Error Body: {response_text}")
+
             if response.status in [200, 201]:
+                # [LOG] تسجيل النجاح مع التفاصيل الكاملة
+                self._log_call(endpoint, 'success', log_details)
+                
                 if not response_text.strip():
-                     msg = f"Success (200) but Empty Body from: {full_url}"
-                     _logger.error(msg)
-                     raise UserError(msg)
+                     return {}
                 return json.loads(response_text)
             else:
-                msg = f"API Error {response.status} from [{full_url}]: {response_text[:200]}"
-                self._log_call(endpoint, 'error', msg)
+                # [LOG] تسجيل الخطأ مع التفاصيل الكاملة
+                self._log_call(endpoint, 'error', log_details)
+                
+                msg = f"API Error {response.status} from [{full_url}]: {response_text}"
                 raise UserError(msg)
 
         except Exception as e:
+            # تسجيل أخطاء الاتصال (مثل التايم آوت أو انقطاع النت)
+            log_details += f"\n\n=== EXCEPTION ===\n{str(e)}"
+            self._log_call(endpoint, 'error', log_details)
+            
             _logger.exception("Native HTTP Failed")
-            raise UserError(f"Connection Failed to [{full_url}]: {str(e)}")
+            raise UserError(str(e))
